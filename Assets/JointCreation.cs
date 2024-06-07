@@ -13,8 +13,8 @@ public class JointCreation : MonoBehaviour
         Collider[] colliders = Physics.OverlapSphere(transform.position, detectionRadius, jointLayerMask);
         foreach (Collider collider in colliders)
         {
-            if (collider.gameObject != gameObject) // Ensure we don't create a joint with ourselves
-            {
+            if (collider.gameObject != gameObject && collider.gameObject.layer == 8) // Ensure we don't create a joint with ourselves
+            { 
                 CreateCharacterJoint(collider.gameObject);
             }
         }
@@ -26,6 +26,7 @@ public class JointCreation : MonoBehaviour
         if (GetComponent<CharacterJoint>() == null)
         {
             CharacterJoint joint = gameObject.AddComponent<CharacterJoint>();
+            /*
             joint.connectedBody = target.GetComponent<Rigidbody>();
 
             // Optionally, configure the joint's properties
@@ -34,6 +35,7 @@ public class JointCreation : MonoBehaviour
             // You can further customize the joint properties like limits, springs, etc. here
 
             Debug.Log($"Created CharacterJoint between {gameObject.name} and {target.name}");
+            */
         }
     }
 
