@@ -13,9 +13,10 @@ public class JointCreation : MonoBehaviour
         Collider[] colliders = Physics.OverlapSphere(transform.position, detectionRadius, jointLayerMask);
         foreach (Collider collider in colliders)
         {
-            if (collider.gameObject != gameObject && collider.gameObject.layer == 8) // Ensure we don't create a joint with ourselves
-            { 
+            if (collider.gameObject != gameObject && collider.gameObject.layer == 8 && collider.transform.parent != transform.parent)
+            {
                 CreateCharacterJoint(collider.gameObject);
+                break;
             }
         }
     }
@@ -26,16 +27,17 @@ public class JointCreation : MonoBehaviour
         if (GetComponent<CharacterJoint>() == null)
         {
             CharacterJoint joint = gameObject.AddComponent<CharacterJoint>();
-            /*
+
             joint.connectedBody = target.GetComponent<Rigidbody>();
 
             // Optionally, configure the joint's properties
             joint.anchor = Vector3.zero; // Adjust the anchor position if necessary
-            joint.autoConfigureConnectedAnchor = true; // Automatically configure the connected anchor
+            joint.autoConfigureConnectedAnchor = false; // Automatically configure the connected anchor
+            joint.enableProjection = true;
+            joint.projectionDistance = 0;
             // You can further customize the joint properties like limits, springs, etc. here
 
             Debug.Log($"Created CharacterJoint between {gameObject.name} and {target.name}");
-            */
         }
     }
 
@@ -46,4 +48,3 @@ public class JointCreation : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, detectionRadius);
     }
 }
-
