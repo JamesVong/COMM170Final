@@ -669,7 +669,7 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 176526141}
         m_TargetAssemblyTypeName: ButtonVR, Assembly-CSharp
-        m_MethodName: switchScene
+        m_MethodName: SwitchScene
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

@@ -7,6 +7,12 @@ public class JointCreation : MonoBehaviour
     public float detectionRadius = 0.5f; // Radius within which the joints will be detected
     public LayerMask jointLayerMask; // LayerMask to specify which objects can form joints
 
+    private void Start()
+    {
+        // Mark the top-level container as DontDestroyOnLoad
+        MarkTopLevelContainer();
+    }
+
     private void Update()
     {
         // Check for nearby JointLocators within the specified LayerMask
@@ -38,7 +44,23 @@ public class JointCreation : MonoBehaviour
             // You can further customize the joint properties like limits, springs, etc. here
 
             Debug.Log($"Created CharacterJoint between {gameObject.name} and {target.name}");
+
+            // Ensure the top-level container is marked as DontDestroyOnLoad
+            MarkTopLevelContainer();
         }
+    }
+
+    private void MarkTopLevelContainer()
+    {
+        // Get the top-level parent of this object
+        Transform topLevelParent = transform;
+        while (topLevelParent.parent != null)
+        {
+            topLevelParent = topLevelParent.parent;
+        }
+
+        // Mark the top-level parent as DontDestroyOnLoad
+        DontDestroyOnLoad(topLevelParent.gameObject);
     }
 
     private void OnDrawGizmosSelected()

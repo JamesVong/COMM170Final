@@ -12,10 +12,13 @@ public class ButtonVR : MonoBehaviour
     GameObject presser;
     bool isPressed;
 
+    private List<GameObject> objectsToMove;
+
     // Start is called before the first frame update
     void Start()
     {
         isPressed = false;
+        objectsToMove = new List<GameObject>();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -46,21 +49,20 @@ public class ButtonVR : MonoBehaviour
 
     public void SwitchScene()
     {
-        // Load the target scene additively to move objects there
-        SceneManager.LoadScene("TestScene", LoadSceneMode.Additive);
+        // Collect objects to move before switching the scene
+        CollectObjectsToMove();
+
+        // Load the target scene normally
+        SceneManager.LoadScene("TestScene");
 
         // Start the coroutine to switch objects to the new scene
         StartCoroutine(MoveObjectsToTestScene());
     }
 
-    private IEnumerator MoveObjectsToTestScene()
+    private void CollectObjectsToMove()
     {
-        // Wait for the "TestScene" to be fully loaded
-        yield return new WaitUntil(() => SceneManager.GetSceneByName("TestScene").isLoaded);
-
-        // Get references to the scenes
-        Scene buildScene = SceneManager.GetSceneByName("BuildScene");
-        Scene testScene = SceneManager.GetSceneByName("TestScene");
+        // Get reference to the buildScene
+        Scene buildScene = SceneManager.GetActiveScene();
 
         // Iterate through all root GameObjects in the buildScene
         foreach (GameObject obj in buildScene.GetRootGameObjects())
@@ -68,16 +70,27 @@ public class ButtonVR : MonoBehaviour
             // Check if the GameObject or any of its children have a CharacterJoint component
             if (ContainsCharacterJoint(obj))
             {
-                // Move the entire top-level GameObject to the testScene
-                SceneManager.MoveGameObjectToScene(obj, testScene);
+                // Add the object to the list of objects to move
+                objectsToMove.Add(obj);
             }
         }
+    }
 
-        // Unload the original scene if needed (optional)
-        // SceneManager.UnloadSceneAsync("BuildScene");
+    private IEnumerator MoveObjectsToTestScene()
+    {
+        // Wait for the new scene to be fully loaded
+        yield return new WaitForEndOfFrame();
 
-        // Finally, set the active scene to the testScene
-        SceneManager.SetActiveScene(testScene);
+        // Get reference to the new active scene
+        Scene testScene = SceneManager.GetActiveScene();
+
+        // Move the collected objects to the new active scene
+        foreach (GameObject obj in objectsToMove)
+        {
+            SceneManager.MoveGameObjectToScene(obj, testScene);
+        }
+
+        Debug.Log("Moving to new scene.");
     }
 
     private bool ContainsCharacterJoint(GameObject parent)
@@ -98,5 +111,4 @@ public class ButtonVR : MonoBehaviour
 
         return false;
     }
-
 }
